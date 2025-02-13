@@ -6,7 +6,7 @@
 /*   By: miyolchy <miyolchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:28:56 by miyolchy          #+#    #+#             */
-/*   Updated: 2025/02/13 23:20:18 by miyolchy         ###   ########.fr       */
+/*   Updated: 2025/02/13 23:30:30 by miyolchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,17 @@ size_t	ft_strlen(const char *s1)
 	return (i);
 }
 
-char	*ft_strrchr(const char *s, int c)
+char	*ft_strchr(const char *s, int c)
 {
-	char	*last;
-
-	last = NULL;
 	while (*s)
 	{
 		if (*s == (char) c)
-			last = (char *)s;
+			return ((char *)s);
 		s++;
 	}
-	if ((char )c == '\0')
-		return ((char *) s);
-	return (last);
+	if ((char) c == '\0')
+		return ((char *)s);
+	return (NULL);
 }
 
 char	*ft_strdup(const char *s)
