@@ -6,7 +6,7 @@
 /*   By: miyolchy <miyolchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:28:56 by miyolchy          #+#    #+#             */
-/*   Updated: 2025/02/13 18:37:56 by miyolchy         ###   ########.fr       */
+/*   Updated: 2025/02/13 23:20:18 by miyolchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,5 +105,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		str[i + k] = s2[k];
 		k++;
 	}
+	str[i + k] = '\0';
 	return (str);
 }
