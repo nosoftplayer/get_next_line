@@ -6,7 +6,7 @@
 /*   By: miyolchy <miyolchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:28:50 by miyolchy          #+#    #+#             */
-/*   Updated: 2025/02/13 23:30:36 by miyolchy         ###   ########.fr       */
+/*   Updated: 2025/02/15 23:47:14 by miyolchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 # endif
 
 # include <unistd.h>
-# include <fcntl.h>
 # include <stdlib.h>
 
 # include <stdio.h>
