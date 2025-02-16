@@ -6,63 +6,65 @@
 /*   By: miyolchy <miyolchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:28:53 by miyolchy          #+#    #+#             */
-/*   Updated: 2025/02/16 18:48:24 by miyolchy         ###   ########.fr       */
+/*   Updated: 2025/02/16 20:33:09 by miyolchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static char	*set_remainder(char **line)
+static void	*clear_remainder(char *remainder)
 {
-	char	*remainder;
-	char	*new_line;
-	size_t	i;
-
-	if (!*line)
-		return (NULL);
-	i = 0;
-	while ((*line)[i] && (*line)[i] != '\n')
-		++i;
-	if ((*line)[i] == '\0' || (*line)[i + 1] == '\0')
-		return (NULL);
-	remainder = ft_substr(*line, i + 1, ft_strlen(*line) - i - 1);
-	new_line = ft_substr(*line, 0, i + 1);
-	free(*line);
-	*line = new_line;
-	if (!*remainder || *remainder == '\0')
-	{
+	if (remainder)
 		free(remainder);
-		remainder = NULL;
-	}
-	return (remainder);
+	return (NULL);
 }
 
-static char	*fill_line(int fd, char *buffer, char *remainder)
+static char	*keep_remainder(char *remainder)
+{
+	char	*nl;
+	char	*tmp;
+
+	nl = ft_strchr(remainder, '\n');
+	if (!nl)
+		return (clear_remainder(remainder));
+	tmp = ft_substr(nl + 1, 0, ft_strlen(nl + 1));
+	clear_remainder(remainder);
+	return (tmp);
+}
+
+static char	*extract_line(char *remainder)
+{
+	char	*nl;
+
+	if (!remainder || !*remainder)
+		return (NULL);
+	nl = ft_strchr(remainder, '\n');
+	if (!nl)
+		return (ft_substr(remainder, 0, ft_strlen(remainder)));
+	return (ft_substr(remainder, 0, nl - remainder + 1));
+}
+
+static char	*fill_line(int fd, char *remainder)
 {
 	char	*tmp;
+	char	buffer[BUFFER_SIZE + 1];
 	ssize_t	read_bytes;
 
 	read_bytes = 1;
-	while (read_bytes > 0)
+	while (read_bytes > 0 && !ft_strchr(remainder, '\n'))
 	{
 		read_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (read_bytes == -1)
-		{
-			free(remainder);
-			return (NULL);
-		}
-		if (read_bytes == 0)
+		if (read_bytes <= 0)
 			break ;
 		buffer[read_bytes] = '\0';
-		if (!remainder)
-			remainder = ft_strdup("");
-		tmp = remainder;
-		remainder = ft_strjoin(tmp, buffer);
-		free(tmp);
-		tmp = NULL;
-		if (ft_strchr(buffer, '\n'))
-			break ;
+		tmp = ft_strjoin(remainder, buffer);
+		clear_remainder(remainder);
+		if (!tmp)
+			return (NULL);
+		remainder = tmp;
 	}
+	if (read_bytes < 0)
+		return (clear_remainder(remainder));
 	return (remainder);
 }
 
@@ -70,18 +72,16 @@ char	*get_next_line(int fd)
 {
 	static char	*remainder;
 	char		*line;
-	char		buffer[BUFFER_SIZE + 1];
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
-	{
-		free(remainder);
-		remainder = NULL;
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > FOPEN_MAX)
 		return (NULL);
-	}
-	line = fill_line(fd, buffer, remainder);
-	if (!line || *line == '\0')
+	remainder = fill_line(fd, remainder);
+	if (!remainder)
 		return (NULL);
-	remainder = set_remainder(&line);
+	line = extract_line(remainder);
+	if (!line)
+		return (remainder = clear_remainder(remainder));
+	remainder = keep_remainder(remainder);
 	return (line);
 }
 
