@@ -6,7 +6,7 @@
 /*   By: miyolchy <miyolchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:28:53 by miyolchy          #+#    #+#             */
-/*   Updated: 2025/02/16 20:33:09 by miyolchy         ###   ########.fr       */
+/*   Updated: 2025/02/16 20:52:48 by miyolchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,30 +21,30 @@ static void	*clear_remainder(char *remainder)
 
 static char	*keep_remainder(char *remainder)
 {
-	char	*nl;
+	char	*new_line;
 	char	*tmp;
 
-	nl = ft_strchr(remainder, '\n');
-	if (!nl)
+	new_line = ft_strchr(remainder, '\n');
+	if (!new_line)
 		return (clear_remainder(remainder));
-	tmp = ft_substr(nl + 1, 0, ft_strlen(nl + 1));
+	tmp = ft_substr(new_line + 1, 0, ft_strlen(new_line + 1));
 	clear_remainder(remainder);
 	return (tmp);
 }
 
 static char	*extract_line(char *remainder)
 {
-	char	*nl;
+	char	*new_line;
 
 	if (!remainder || !*remainder)
 		return (NULL);
-	nl = ft_strchr(remainder, '\n');
-	if (!nl)
+	new_line = ft_strchr(remainder, '\n');
+	if (!new_line)
 		return (ft_substr(remainder, 0, ft_strlen(remainder)));
-	return (ft_substr(remainder, 0, nl - remainder + 1));
+	return (ft_substr(remainder, 0, new_line - remainder + 1));
 }
 
-static char	*fill_line(int fd, char *remainder)
+static char	*read_file(int fd, char *remainder)
 {
 	char	*tmp;
 	char	buffer[BUFFER_SIZE + 1];
@@ -57,11 +57,11 @@ static char	*fill_line(int fd, char *remainder)
 		if (read_bytes <= 0)
 			break ;
 		buffer[read_bytes] = '\0';
-		tmp = ft_strjoin(remainder, buffer);
-		clear_remainder(remainder);
-		if (!tmp)
+		tmp = remainder;
+		remainder = ft_strjoin(tmp, buffer);
+		clear_remainder(tmp);
+		if (!remainder)
 			return (NULL);
-		remainder = tmp;
 	}
 	if (read_bytes < 0)
 		return (clear_remainder(remainder));
@@ -75,7 +75,7 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || fd > FOPEN_MAX)
 		return (NULL);
-	remainder = fill_line(fd, remainder);
+	remainder = read_file(fd, remainder);
 	if (!remainder)
 		return (NULL);
 	line = extract_line(remainder);
